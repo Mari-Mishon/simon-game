@@ -1,15 +1,14 @@
 <template>
+  <div class="board">
+    <Square
+      :squareState="squareState"
+      v-for="square in squares"
+      :square="square"
+      :key="square.id"
+      @selectSquare="selectSquare($event)"
+    />
+  </div>
   <div class="wrapper">
-    <div class="board">
-      <Square
-        :squareState="squareState"
-        v-for="square in squares"
-        :square="square"
-        :key="square.id"
-        @selectSquare="selectSquare($event)"
-      />
-    </div>
-
     <div class="levels">
       <input type="radio" value="level_1" v-model="difficultLevel" /> Легкий
     </div>
@@ -39,6 +38,7 @@ import {
   DEFAULT_ROUND_NUMBER,
   GAME_LEVELS,
   GAME_STATUS,
+  CELL,
 } from "@/constants";
 
 export default {
@@ -54,6 +54,21 @@ export default {
     let difficultLevel = ref("level_1");
     const number = 4;
 
+    const setAudio = (id) => {
+      switch (id) {
+        case CELL.CELL_1:
+          return new Audio(require("@/assets/sounds/1.mp3"));
+        case CELL.CELL_2:
+          return new Audio(require("@/assets/sounds/2.mp3"));
+        case CELL.CELL_3:
+          return new Audio(require("@/assets/sounds/3.mp3"));
+        case CELL.CELL_4:
+          return new Audio(require("@/assets/sounds/4.mp3"));
+        default:
+          return null;
+      }
+    };
+
     const init = () => {
       simonMoves.value = [];
       playerMoves.value = [];
@@ -62,6 +77,7 @@ export default {
         squares.value.push({
           id: i + 1,
           value: FIELD.EMPTY,
+          audio: setAudio(i + 1),
         });
       }
     };
@@ -82,7 +98,8 @@ export default {
       const index = squares.value.findIndex((square) => {
         return square.id === id;
       });
-
+      console.log("UAUA");
+      squares.value[index].audio.play();
       playerMoves.value.push(squares.value[index].id);
 
       if (index > -1) {
@@ -130,9 +147,12 @@ export default {
         const simonMove = squares.value.find((square) => {
           return square.id === id;
         });
+
         await sleep(difficultTimeOut.value / 2);
 
         simonMove.value = FIELD.FIELD;
+        simonMove.audio.play();
+
         await sleep(difficultTimeOut.value / 2);
 
         simonMove.value = FIELD.EMPTY;
@@ -146,7 +166,7 @@ export default {
         playerMoves.value = [];
         await nextTick();
         showSquares(squares, squareState, simonMoves);
-      }, difficultTimeOut);
+      }, difficultTimeOut.value * 2);
     };
 
     const isGameOver = computed(() => {
@@ -173,13 +193,15 @@ export default {
 
 <style lang="scss">
 .board {
-  background-color: #000;
-  width: 200px;
+  background-color: #fff;
+  width: 280px;
   margin: 0 auto;
+  text-align: center;
 }
 
 .wrapper {
   margin-bottom: 40px;
+  text-align: center;
 }
 
 button {

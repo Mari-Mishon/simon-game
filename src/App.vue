@@ -1,7 +1,7 @@
 <template>
  <div class="app">
    <div class="details">
-     <h1> SaimonGame</h1>
+     <h1> Simon The Game</h1>
    </div>
    <Board></Board>
  </div>
@@ -24,6 +24,9 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  
+h1 {
+  text-align: center;
+  margin:30px;
+}
 }
 </style>
